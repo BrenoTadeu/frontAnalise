@@ -18,25 +18,25 @@
 
     <section class="step-panel">
       <div *ngIf="stepIndex() === 0">
-        <label class="upload-card" for="imageUpload">
-          <div>
-            <strong>Selecione imagens</strong>
-            <p>Arraste ou clique para escolher arquivos em formato JPG, PNG.</p>
-          </div>
+        <div class="upload-cards">
+          <label class="upload-card" for="imageUpload">
+            <div class="image-uploader">
+              <strong>Selecione imagens</strong>
+              <p>Arraste ou clique para escolher arquivos em formato JPG, PNG.</p>
+            </div>
+          </label>
 
-        </label>
+          <label class="upload-card upload-camera" for="imageCamera">
+            <div>
+              <strong>Tirar foto</strong>
+              <p>Use a câmera do celular para capturar a imagem diretamente.</p>
+            </div>
+            <button type="button" class="ghost-button">Abrir câmera</button>
+          </label>
+        </div>
+
         <input id="imageUpload" type="file" accept="image/*" multiple (change)="onFileInputChange($event)" hidden />
-
-        <label class="upload-card upload-camera" for="imageCamera">
-          <div>
-            <strong>Tirar foto</strong>
-            <p>Use a câmera do celular para capturar a imagem diretamente.</p>
-          </div>
-          <button type="button" class="ghost-button">Abrir câmera</button>
-        </label>
-        <input id="imageCamera" type="file" accept="image/*" capture="environment" (change)="onFileInputChange($event)"
-          hidden />
-
+        <input id="imageCamera" type="file" accept="image/*" capture="environment" (change)="onFileInputChange($event)" hidden />
         <div class="preview-grid" *ngIf="hasImages">
           <article class="preview-card" *ngFor="let image of images(); trackBy: trackById">
             <img [src]="image.previewUrl" [alt]="image.name" />
@@ -59,7 +59,7 @@
         <div class="review-header">
           <div>
             <h2>Revisar seleção</h2>
-            <p>Confira as imagens antes do envio. Remova as fotos indesejadas rapidamente.</p>
+            <p>Confira as imagens antes do envio ou remova as fotos indesejadas rapidamente.</p>
           </div>
           <span class="badge">{{ images().length }} imagens</span>
         </div>
@@ -107,7 +107,7 @@
           <span class="badge">Resposta recebida</span>
         </div>
         <div class="response-grid">
-          <div ngIf="loading(); else resultado" class="loade-wrapper">
+          <div *ngIf="loading(); else resultado" class="loader-wrapper">
             <div class="loader">
               <span></span>
               <span></span>
@@ -116,17 +116,25 @@
               <span></span>
               <span></span>
             </div>
+            
+            <p>{{ loadingMessage() }}</p>
           </div>
-          <p>{{loadingMessage()}}</p>
+          
           <ng-template #resultado>
             <article class="response-card">
               <span class="response-label">Descrição do dano</span>
               <strong>{{ typeResponse() }}</strong>
             </article>
-            <article class="budget-card">
+            <article class="budget-card" *ngIf="showBudget()">
               <span class="response-label">Orçamento estimado</span>
-              <strong>{{ orcamento() }}</strong>
+              <strong>{{ orcamento() | currency:'BRL' }}</strong>
             </article>
+            <!-- <article class="images-card" *ngIf="showImages()">
+              <span class="response-label">Imagens analisadas:</span>
+              <div class="response-images">
+                <img class="response-image" *ngFor="let image of images(); trackBy: trackById" [src]="image.previewUrl" [alt]="image.name" />
+              </div>
+            </article> -->
           </ng-template>
         </div>
       </div>

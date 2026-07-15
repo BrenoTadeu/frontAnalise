@@ -35,6 +35,8 @@ export class ImageStepperComponent {
     "Calculando orçamento..."
   ];
   protected readonly typeResponse = signal('');
+  protected readonly showBudget = signal(false);
+  protected readonly showImages = signal(false);
 
   protected get currentStepName(): string {
     return this.steps[this.stepIndex()];
@@ -106,7 +108,7 @@ export class ImageStepperComponent {
     }
 
     this.images.update(current => current.filter(image => image.id !== id));
-  }
+  } 
 
   private typeWrite(text: string){
     this.typeResponse.set('');
@@ -117,6 +119,7 @@ export class ImageStepperComponent {
 
       if(index >= text.length){
         clearInterval(interval);
+        this.showBudget.set(true);
       }
     }, 20);
 
@@ -159,7 +162,9 @@ export class ImageStepperComponent {
         console.log(resposta);
         this.response.set(resposta.descricaoIa);
         this.typeWrite(resposta.descricaoIa);
+        this.orcamento.set(resposta.valor_target?.toString() ?? null);
         this.responseReady.set(true);
+        this.loading.set(false);
       },
       error: (error) =>{
         console.log(error)
