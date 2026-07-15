@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
+import { IaService } from './services/ia.services';
+import { AnaliseResponse } from './interfaces/ia.interface';
+
 
 interface UploadedImage {
   id: string;
@@ -21,8 +24,17 @@ export class ImageStepperComponent {
   protected readonly stepIndex = signal(0);
   protected readonly images = signal<UploadedImage[]>([]);
   protected readonly response = signal('Aguardando envio...');
-  protected readonly orcamento = signal('R$ 0,00');
+  protected readonly orcamento = signal<string | null> (null);
   protected readonly responseReady = signal(false);
+  protected readonly loading = signal(false);
+  protected readonly loadingMessage = signal('');
+  private readonly loadingMessages = [
+    "Enviando as imagens...",
+    "Verificando avarias...",
+    "Identificando as peças...",
+    "Calculando orçamento..."
+  ];
+  protected readonly typeResponse = signal('');
 
   protected get currentStepName(): string {
     return this.steps[this.stepIndex()];
@@ -96,23 +108,70 @@ export class ImageStepperComponent {
     this.images.update(current => current.filter(image => image.id !== id));
   }
 
+  private typeWrite(text: string){
+    this.typeResponse.set('');
+    let index = 0;
+    const interval = setInterval(() =>{
+      this.typeResponse.update(value => value + text.charAt(index));
+      index++;
+
+      if(index >= text.length){
+        clearInterval(interval);
+      }
+    }, 20);
+
+  }
+
+  private startLoadingAnimation(){
+    let index = 0;
+
+    this.loadingMessage.set(this.loadingMessages[0]);
+    const interval = setInterval(()=>{
+      index++;
+      if(index >= this.loadingMessages.length || !this.loading()){
+        clearInterval(interval);
+        return;
+      }
+
+      this.loadingMessage.set(this.loadingMessages[index]);
+    }, 1500);
+  
+  };
+
+  constructor(private iaService: IaService) {}
   protected enviarParaApi(): void {
     if (!this.hasImages) {
       return;
     }
 
-    const filesToSend = this.images().map(image => image.file);
-    console.log('Enviar para API:', filesToSend);
-    // TODO: aqui você pode usar HttpClient para enviar filesToSend para sua API de análise
+    const formData = new FormData();
 
-    const value = this.images().length * 180;
-    this.orcamento.set(new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value));
-    this.response.set('Orçamento gerado com sucesso. Confira abaixo o valor estimado.');
-    this.responseReady.set(true);
+    this.loading.set(true);
+    this.startLoadingAnimation();
     this.stepIndex.set(3);
+
+    this.images().forEach(image => {
+      formData.append('arquivo', image.file);
+    })
+
+    this.iaService.enviarImagens(formData).subscribe({
+      next: (resposta: AnaliseResponse) =>{
+        console.log(resposta);
+        this.response.set(resposta.descricaoIa);
+        this.typeWrite(resposta.descricaoIa);
+        this.responseReady.set(true);
+      },
+      error: (error) =>{
+        console.log(error)
+
+        this.response.set(
+          error.error?.message ??
+          'Não foi possível concluir o seu orçamento, porém sua análise foi concluída'
+        );
+        this.responseReady.set(true);
+        this.stepIndex.set(3);
+      }
+    })
   }
 
   protected trackById(_: number, item: UploadedImage): string {

@@ -10,153 +10,134 @@
     </header>
 
     <div class="stepper-bar" aria-hidden="true">
-    <div
-      class="step"
-      *ngFor="let step of steps; index as i"
-      [class.active]="stepIndex() === i"
-      (click)="goToStep(i)"
-    >
-      <span class="step-number">{{ i + 1 }}</span>
-      <span>{{ step }}</span>
+      <div class="step" *ngFor="let step of steps; index as i" [class.active]="stepIndex() === i" (click)="goToStep(i)">
+        <span class="step-number">{{ i + 1 }}</span>
+        <span>{{ step }}</span>
+      </div>
     </div>
-  </div>
 
-  <section class="step-panel">
-    <div *ngIf="stepIndex() === 0">
-      <label class="upload-card" for="imageUpload">
-        <div>
-          <strong>Selecione imagens</strong>
-          <p>Arraste ou clique para escolher arquivos em formato JPG, PNG.</p>
-        </div>
-    
-      </label>
-      <input
-        id="imageUpload"
-        type="file"
-        accept="image/*"
-        multiple
-        (change)="onFileInputChange($event)"
-        hidden
-      />
-
-      <label class="upload-card upload-camera" for="imageCamera">
-        <div>
-          <strong>Tirar foto</strong>
-          <p>Use a câmera do celular para capturar a imagem diretamente.</p>
-        </div>
-        <button type="button" class="ghost-button">Abrir câmera</button>
-      </label>
-      <input
-        id="imageCamera"
-        type="file"
-        accept="image/*"
-        capture="environment"
-        (change)="onFileInputChange($event)"
-        hidden
-      />
-
-      <div class="preview-grid" *ngIf="hasImages">
-        <article class="preview-card" *ngFor="let image of images(); trackBy: trackById">
-          <img [src]="image.previewUrl" [alt]="image.name" />
-          <div class="preview-meta">
-            <div>
-              <strong>{{ image.name }}</strong>
-              <span>{{ image.size }}</span>
-            </div>
-            <button type="button" class="ghost-button" (click)="removeImage(image.id)">Remover</button>
+    <section class="step-panel">
+      <div *ngIf="stepIndex() === 0">
+        <label class="upload-card" for="imageUpload">
+          <div>
+            <strong>Selecione imagens</strong>
+            <p>Arraste ou clique para escolher arquivos em formato JPG, PNG.</p>
           </div>
-        </article>
-      </div>
 
-      <div class="empty-state" *ngIf="!hasImages">
-        <p>Nenhuma imagem selecionada. Escolha várias imagens para começar.</p>
-      </div>
-    </div>
+        </label>
+        <input id="imageUpload" type="file" accept="image/*" multiple (change)="onFileInputChange($event)" hidden />
 
-    <div *ngIf="stepIndex() === 1">
-      <div class="review-header">
-        <div>
-          <h2>Revisar seleção</h2>
-          <p>Confira as imagens antes do envio. Remova as fotos indesejadas rapidamente.</p>
-        </div>
-        <span class="badge">{{ images().length }} imagens</span>
-      </div>
-
-      <div class="review-grid" *ngIf="hasImages">
-        <article class="review-card" *ngFor="let image of images(); trackBy: trackById">
-          <img [src]="image.previewUrl" [alt]="image.name" />
-          <div class="review-info">
-            <div>
-              <strong>{{ image.name }}</strong>
-              <span>{{ image.size }}</span>
-            </div>
-            <button type="button" class="ghost-button" (click)="removeImage(image.id)">Remover</button>
+        <label class="upload-card upload-camera" for="imageCamera">
+          <div>
+            <strong>Tirar foto</strong>
+            <p>Use a câmera do celular para capturar a imagem diretamente.</p>
           </div>
-        </article>
+          <button type="button" class="ghost-button">Abrir câmera</button>
+        </label>
+        <input id="imageCamera" type="file" accept="image/*" capture="environment" (change)="onFileInputChange($event)"
+          hidden />
+
+        <div class="preview-grid" *ngIf="hasImages">
+          <article class="preview-card" *ngFor="let image of images(); trackBy: trackById">
+            <img [src]="image.previewUrl" [alt]="image.name" />
+            <div class="preview-meta">
+              <div>
+                <strong>{{ image.name }}</strong>
+                <span>{{ image.size }}</span>
+              </div>
+              <button type="button" class="ghost-button" (click)="removeImage(image.id)">Remover</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="empty-state" *ngIf="!hasImages">
+          <p>Nenhuma imagem selecionada. Escolha várias imagens para começar.</p>
+        </div>
       </div>
 
-      <div class="empty-state" *ngIf="!hasImages">
-        <p>Ainda não há imagens para revisar. Volte ao primeiro passo para adicionar arquivos.</p>
-      </div>
-    </div>
+      <div *ngIf="stepIndex() === 1">
+        <div class="review-header">
+          <div>
+            <h2>Revisar seleção</h2>
+            <p>Confira as imagens antes do envio. Remova as fotos indesejadas rapidamente.</p>
+          </div>
+          <span class="badge">{{ images().length }} imagens</span>
+        </div>
 
-    <div *ngIf="stepIndex() === 2">
-      <div class="send-summary">
-        <h2>Enviar para análise</h2>
-        <p>Se tudo estiver correto, confirme o envio. Você poderá integrar sua API no método <code>enviarParaApi()</code>.</p>
+        <div class="review-grid" *ngIf="hasImages">
+          <article class="review-card" *ngFor="let image of images(); trackBy: trackById">
+            <img [src]="image.previewUrl" [alt]="image.name" />
+            <div class="review-info">
+              <div>
+                <strong>{{ image.name }}</strong>
+                <span>{{ image.size }}</span>
+              </div>
+              <button type="button" class="ghost-button" (click)="removeImage(image.id)">Remover</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="empty-state" *ngIf="!hasImages">
+          <p>Ainda não há imagens para revisar. Volte ao primeiro passo para adicionar arquivos.</p>
+        </div>
       </div>
 
-      <div class="send-details">
-        <p><strong>Total de imagens:</strong> {{ images().length }}</p>
-        <p *ngIf="hasImages"><strong>Última imagem adicionada:</strong> {{ images()[images().length - 1].name }}</p>
+      <div *ngIf="stepIndex() === 2">
+        <div class="send-summary">
+          <h2>Enviar para análise</h2>
+          <p>Se tudo estiver correto, confirme o envio. Para a análise</p>
+        </div>
+
+        <div class="send-details">
+          <p><strong>Total de imagens:</strong> {{ images().length }}</p>
+          <p *ngIf="hasImages"><strong>Última imagem adicionada:</strong> {{ images()[images().length - 1].name }}</p>
+        </div>
+
+        <button type="button" class="primary-button full-width" [disabled]="!hasImages" (click)="enviarParaApi()">
+          Enviar para Análise
+        </button>
       </div>
 
-      <button
-        type="button"
-        class="primary-button full-width"
-        [disabled]="!hasImages"
-        (click)="enviarParaApi()"
-      >
-        Enviar para Análise
+      <div *ngIf="stepIndex() === 3">
+        <div class="response-header">
+          <div>
+            <h2>Resposta e orçamento</h2>
+            <p>Veja aqui o resultado da análise e o valor estimado para o serviço.</p>
+          </div>
+          <span class="badge">Resposta recebida</span>
+        </div>
+        <div class="response-grid">
+          <div ngIf="loading(); else resultado" class="loade-wrapper">
+            <div class="loader">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <p>{{loadingMessage()}}</p>
+          <ng-template #resultado>
+            <article class="response-card">
+              <span class="response-label">Descrição do dano</span>
+              <strong>{{ typeResponse() }}</strong>
+            </article>
+            <article class="budget-card">
+              <span class="response-label">Orçamento estimado</span>
+              <strong>{{ orcamento() }}</strong>
+            </article>
+          </ng-template>
+        </div>
+      </div>
+    </section>
+
+    <footer class="actions-footer">
+      <button type="button" class="ghost-button" (click)="previousStep()" [disabled]="stepIndex() === 0">Voltar</button>
+      <button type="button" class="primary-button" (click)="nextStep()"
+        [disabled]="stepIndex() === steps.length - 1 || (stepIndex() === 0 && !hasImages) || (stepIndex() === steps.length - 2 && !responseReady())">
+        {{ stepIndex() === steps.length - 2 ? 'Ir para Resposta' : 'Avançar' }}
       </button>
-    </div>
-
-    <div *ngIf="stepIndex() === 3">
-      <div class="response-header">
-        <div>
-          <h2>Resposta e orçamento</h2>
-          <p>Veja aqui o resultado da análise e o valor estimado para o serviço.</p>
-        </div>
-        <span class="badge">Resposta recebida</span>
-      </div>
-
-      <div class="response-grid">
-        <article class="response-card">
-          <span class="response-label">Status</span>
-          <strong>{{ response() }}</strong>
-        </article>
-        <article class="budget-card">
-          <span class="response-label">Orçamento estimado</span>
-          <strong>{{ orcamento() }}</strong>
-        </article>
-      </div>
-
-      <div class="response-note">
-        <p>Quando sua API estiver integrada, este espaço poderá exibir o retorno real da análise e do orçamento.</p>
-      </div>
-    </div>
-  </section>
-
-  <footer class="actions-footer">
-    <button type="button" class="ghost-button" (click)="previousStep()" [disabled]="stepIndex() === 0">Voltar</button>
-    <button
-      type="button"
-      class="primary-button"
-      (click)="nextStep()"
-      [disabled]="stepIndex() === steps.length - 1 || (stepIndex() === 0 && !hasImages) || (stepIndex() === steps.length - 2 && !responseReady())"
-    >
-      {{ stepIndex() === steps.length - 2 ? 'Ir para Resposta' : 'Avançar' }}
-    </button>
-  </footer>
+    </footer>
   </div>
 </section>
